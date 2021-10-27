@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hotstar</title>
+    <style>
+         body{
+            background-image: url('https://images.unsplash.com/photo-1574267432553-4b4628081c31?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzR8fG1vdmllfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
+        }
+        input{
+           
+            padding: 7px;
+            border: none;
+            margin: 10px;
+            margin-top: 8px;
+            margin-right: 16px;
+            font-size: 17px;
+            width:80%;
+        }
+        
+        #data{
+            background-color: rgba(58, 51, 51, 0.4);
+            height:550px;
+            width: 700px;
+            justify-content: center;
+            text-align: center;
+            margin:auto;
+        }
+        
+        .trend{
+            
+            display: grid;
+            grid-template-columns: repeat(4 ,23%);
+            margin:auto;
+            grid-gap:10px;
+            
+           
+           
+        }
+
+        .small{
+            width:170px;
+          
+            
+        }
+        .mar{
+            margin-left: 50px;
+        }
+
+        .movie{
+            display:inline-block;
+            width: 200px;
+            margin: 1rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 3px;
+} 
+.white{
+    color:blanchedalmond;
+    font-family: Arial, Helvetica, sans-serif;
+}
+    </style>
+</head>
+<body>
+    <input oninput="debounce(main , 1000)" type="search" id="movie" placeholder="Enter movie name" />
+
+     <div id="movies"></div>
+     <div id="data"></div>
+    
+
+    
+        <div class="mar">
+            <h2 class="white">Popular Movies</h2>
+            <div id="trend"></div>
+        </div> 
+        
+    
+    
+
+    
+
+    
+</body>
+</html>
+
+<script>
+    var timerid;
+ let movies_div = document.getElementById("movies")
+ let container = document.getElementById("data");
+ ///let moviee = document.getElementById("movie").value
+ //console.log(moviee)
+ 
+
+    async function searchMovies(movie_name){
+    
+       try{
+        let res = await fetch(`http://www.omdbapi.com/?s=${movie_name}&apikey=695ddea7`);
+
+        let data = await res.json();
+        //console.log("data:" , data);
+       return data
+
+       } catch (e){
+           console.log("e:" , e);
+       }
+        
+    }
+
+
+    function appendMovies(mov){
+      if(mov === undefined){
+          return false
+      }
+
+      movies_div.innerHTML = null;  /// vvi
+
+      // <a href="https://www.w3schools.com">Visit W3Schools.com!</a>
+      mov.forEach(function(x){
+          let p = document.createElement("button")
+          p.addEventListener("click" , showMovie)///////////////////// Starts  ////////////////////////////////////////////
+
+          function showMovie(){
+              console.log("showdata" , x)
+     container.innerHTML= null;
+
+     
+    let title = document.createElement("h2");
+    title.innerText = x.Title;
+    title.style.fontWeight= 800;
+    title.style.fontFamily="Helvetica";
+    title.style.color="#eeeeee"
+   
+ // Response: "False"
+
+    let img = document.createElement("img")
+    img.src = x.Poster;
+    //img.style.display = inline-block;
+    
+    //.style.color
+
+    let imdb = document.createElement("p");
+    imdb.innerHTML= "Imdb :  " + x.imdbID;
+    imdb.style.fontWeight= 600;
+    imdb.style.fontFamily="Helvetica";
+    imdb.style.color="#eeeeee"
+
+    let date = document.createElement("p");
+    date.innerHTML = "Released Year:  " + x.Year;
+    date.style.fontWeight= 600;
+    date.style.fontFamily="Helvetica";
+    data.style.color="#eeeeee"
+
+    let cast = document.createElement("p")
+    cast.innerHTML = "Type :  " + x.Type;
+    cast.style.fontWeight= 600;
+    cast.style.fontFamily="Helvetica";
+    cast.style.color="#eeeeee"
+
+  
+
+
+      container.append( img  , date ,title    );
+
+
+}
+   
+////////////////////////////////////////////////////////////////////////////////////
+          p.innerText = x.Title;
+          p.Value = x.Title;
+        
+
+         p.style.display= "inline-block";
+         p.style.width= "80%";
+         p.style.color= "black";
+         p.style.fontSize= "13px";
+         p.style.fontFamily="Helvetica";
+         p.style.padding= "3px";
+         p.style.border= "none";
+         p.style.textAlign= "left";
+
+         movies_div.append(p);
+       
+
+      });
+
+    }
+
+    
+   async function main(){
+        
+        let name = document.getElementById("movie").value;
+
+        if(name.length< 2){
+            movies_div.style.display="none"
+
+            return false
+        }
+        else{
+            movies_div.style.display="block"
+
+        }
+
+
+        let res = await searchMovies(name);
+        console.log("res" , res);
+        let movies_data = res.Search // it has the arry of object all searched data // see console log
+        
+        appendMovies(movies_data);
+
+    }
+
+
+    function debounce(func , time){
+      // func is main() function , time is passed 1000ms 
+
+      // ave - settimeout - func - main() - searchmovies(ave)
+      // aven - clear prev time out - settimeout - func - main() - searchmovies(aven)
+     
+     if(timerid)  // if timerid is avalable as its not for less than 3 length
+     {
+         clearTimeout(timerid)
+     }
+
+
+      timerid = setTimeout(function(){
+          func();
+
+
+      } , time)
+
+
+
+    }
+
+    
+const API_URL = 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=967618645553133b3df8f4ad182f4aa5&page=1'
+const IMG_PATH = 'https://image.tmdb.org/t/p/w1280'
+const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=967618645553133b3df8f4ad182f4aa5&query="'
+
+const trend = document.getElementById('trend')
+
+
+loadMovies(API_URL)
+
+async function loadMovies(url) {
+    const res = await fetch(url)
+    const data = await res.json()
+    
+    console.log("trend_mydata" ,data)
+    showMoviesD(data.results)
+}
+
+function showMoviesD(movies){
+    trend.innerHTML = ''
+
+    movies.forEach((movie) => {
+        const {title, poster_path} = movie
+
+        const movieEl = document.createElement('div')
+        movieEl.classList.add('movie')
+
+       movieEl.addEventListener("click" , showT)
+        
+       function showT(){
+          // alert(title)
+          console.log("clickdatas" , title)
+         
+          
+       }
+
+        movieEl.innerHTML = `
+        
+            <img class="small" src="${IMG_PATH + poster_path}" alt="${title}">
+        
+           
+           
+        `
+        trend.appendChild(movieEl)
+    })
+}
+
+
+
+
+
+</script>
